@@ -1,25 +1,113 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+import './App.css';
+function ProductCategoryRow({category}){
+return(
+  <tr>
+  <th colSpan="2">
+    {category}
+  </th>
+</tr>
+)
+}
+function Details({product}){
+  const name = product.stocked ? product.name :
+    <span style={{ color: 'red' }}>
+      {product.name}
+    </span>;
+  return(
+    <tr>
+    <td>{name}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>{product.price}</td>
+  </tr>
+  )
+
+}
+
+function DetailTable({products}){
+  const rows = []
+  let lastElement = null
+  products.forEach((products) => {
+    if(products.category !== lastElement){
+      rows.push(
+      
+         
+        <ProductCategoryRow
+        category={products.category}
+        key={products.category} />
+        
+
+        
+      )
+    }
+
+    rows.push(
+      <Details
+      product={products}
+        key={products.name} />
+    )
+    lastElement = products.category;
+  });
+
+
+  return(
+  <>
+  <div>
+    <table>
+      <thead>
+        <td>Name</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Price</td>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
+    </table>
+  </div>
+  </>
   );
 }
 
-export default App;
+function SearchBar(){
+  return(
+    <>
+    <input type="text" placeholder="You can seacrh here"></input>
+    <br></br>
+    <input type="checkbox"></input>
+    <label>Show the products in cart</label>
+    </>
+  );
+}
+
+function MainTable({products}){
+ return(
+  <div>
+    <SearchBar />
+    <DetailTable products={products}/>
+
+  </div>
+ );
+
+}
+
+
+const PRODUCTS = [
+  {category: "Fruits", price: "$1", stocked: true, name: "Apple"},
+  {category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"},
+  {category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"},
+  {category: "Vegetables", price: "$2", stocked: true, name: "Spinach"},
+  {category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"},
+  {category: "Vegetables", price: "$1", stocked: true, name: "Peas"}
+];
+
+
+export default function App() {
+  return (
+    <MainTable products={PRODUCTS} />
+  );
+}
+
