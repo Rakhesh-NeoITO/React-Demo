@@ -1,5 +1,30 @@
 
 import './App.css';
+import { useState } from 'react';
+
+function MainTable({products}){
+  const [filterText, setFilterText] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+
+ return(
+  <div>
+    <SearchBar
+    filterText={filterText}
+    inStockOnly={inStockOnly}
+    changeSetFilterText={setFilterText}
+    changeSetInStockOnly={setInStockOnly}
+    />
+    <DetailTable 
+    products={products}
+    filterText={filterText}
+    inStockOnly={inStockOnly}
+    />
+
+  </div>
+ );
+
+}
+
 function ProductCategoryRow({category}){
 return(
   <tr>
@@ -26,29 +51,32 @@ function Details({product}){
 
 }
 
-function DetailTable({products}){
+function DetailTable({products,filterText,inStockOnly}){
   const rows = []
   let lastElement = null
-  products.forEach((products) => {
-    if(products.category !== lastElement){
-      rows.push(
-      
-         
-        <ProductCategoryRow
-        category={products.category}
-        key={products.category} />
-        
+  products.forEach((product) => {
+  
+    if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1){
+      return;
+    }
+    if (inStockOnly && !product.stocked) {
+      return;
+    }
 
-        
+    if(product.category !== lastElement){
+      rows.push(
+        <ProductCategoryRow
+        category={product.category}
+        key={product.category} />        
       )
     }
 
     rows.push(
       <Details
-      product={products}
-        key={products.name} />
+      product={product}
+        key={product.name} />
     )
-    lastElement = products.category;
+    lastElement = product.category;
   });
 
 
@@ -72,27 +100,30 @@ function DetailTable({products}){
   );
 }
 
-function SearchBar(){
+function SearchBar({
+  filterText,
+  inStockOnly,
+  changeSetFilterText,
+  changeSetInStockOnly
+}){
   return(
     <>
-    <input type="text" placeholder="You can seacrh here"></input>
+   <form>
+   <input type="text" placeholder="You can seacrh here"
+    value={filterText}
+    onChange={(e) => changeSetFilterText(e.target.value)}/>
+
     <br></br>
-    <input type="checkbox"></input>
+    <input type="checkbox" 
+    checked={inStockOnly}
+      onChange={(e) => changeSetInStockOnly(e.target.checked)}/>
     <label>Show the products in cart</label>
+   </form>
     </>
   );
 }
 
-function MainTable({products}){
- return(
-  <div>
-    <SearchBar />
-    <DetailTable products={products}/>
 
-  </div>
- );
-
-}
 
 
 const PRODUCTS = [
